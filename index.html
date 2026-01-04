@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Solar Sizing Calculator Kenya (2026) | Inverter, Battery & Panels</title>
+    
+    <meta name="description" content="Free accurate solar sizing calculator for Kenya. Calculate exact inverter size, battery bank (Ah), and solar panels needed for your home. Accounts for fridge surge power and local sun hours.">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root { --primary-color: #f59e0b; --secondary-color: #1e293b; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        .header-section { background: var(--secondary-color); color: white; padding: 40px 0; margin-bottom: 30px; }
+        
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; background: white; }
+        .card-header-custom { background: white; border-bottom: 2px solid #f1f5f9; padding: 20px; font-weight: 700; color: var(--secondary-color); border-radius: 12px 12px 0 0; }
+
+        /* Results Styling */
+        .result-card { border-left: 5px solid var(--primary-color); background: white; transition: transform 0.2s; }
+        .result-card:hover { transform: translateY(-2px); }
+        .result-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .result-value { font-size: 1.8rem; font-weight: 800; color: var(--secondary-color); }
+        .result-detail { font-size: 0.9rem; color: #059669; font-weight: 600; margin-top: 5px; }
+
+        /* Buttons */
+        .btn-add { border: 2px dashed #cbd5e1; color: #64748b; background: transparent; }
+        .btn-add:hover { background: #f8fafc; border-color: var(--primary-color); color: var(--primary-color); }
+        
+        .btn-calc { background: var(--primary-color); color: var(--secondary-color); font-weight: 800; border: none; padding: 15px; font-size: 1.1rem; }
+        .btn-calc:hover { background: #d97706; color: white; }
+        
+        .affiliate-box { background: #fff7ed; border: 1px solid #ffedd5; border-radius: 8px; padding: 20px; display: none; /* Hidden by default */ }
+    </style>
+</head>
+
+<body>
+
+<header class="header-section text-center shadow-sm">
+    <div class="container">
+        <h1>
+            <i class="fas fa-solar-panel text-warning"></i>
+            Pro Solar Sizer
+            <span class="badge bg-warning text-dark" style="font-size: 0.4em; vertical-align: top;">KE</span>
+        </h1>
+        <p class="lead opacity-75 mb-0">Accurate Off-Grid Solar Sizing for Kenyan Homes</p>
+    </div>
+</header>
+
+<main>
+
+<section class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <p class="text-muted">
+                This free tool calculates the correct <strong>Inverter Size</strong>, <strong>Battery Bank (Ah)</strong>, and <strong>Solar Panels</strong> for Kenyan off-grid systems. 
+                Unlike basic calculators, it accounts for <strong>motor surge power</strong> (fridges/pumps) and <strong>inverter efficiency</strong> to prevent system failure.
+            </p>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row g-4">
+
+        <div class="col-lg-7">
+
+            <div class="card card-custom">
+                <div class="card-header-custom"><i class="fas fa-sliders-h me-2"></i> System Parameters</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">System Voltage</label>
+                            <select id="voltage" class="form-select fw-bold">
+                                <option value="12">12V (Small Setup)</option>
+                                <option value="24" selected>24V (Standard Home)</option>
+                                <option value="48">48V (Large Home)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Battery Chemistry</label>
+                            <select id="battType" class="form-select">
+                                <option value="0.5">Lead Acid / Gel (50% DoD)</option>
+                                <option value="0.8">Lithium Ion (80% DoD)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Location (Sun Hours)</label>
+                            <select id="sunHours" class="form-select">
+                                <option value="5.0">Nairobi / Central (5.0h)</option>
+                                <option value="5.5">Mombasa / Coast (5.5h)</option>
+                                <option value="6.5">Turkana / North (6.5h)</option>
+                                <option value="4.5">Highlands / Cloudy (4.5h)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Autonomy (Days)</label>
+                            <input type="number" id="autonomy" class="form-control" value="1.5" step="0.5" min="0.5">
+                            <div class="form-text small">Days to last without sun (Rec: 1.5 - 2).</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-custom">
+                <div class="card-header-custom d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-plug me-2"></i> Appliances</span>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-light border border-warning small">
+                        <i class="fas fa-bolt text-warning me-1"></i> Tick <strong>Motor</strong> for Fridges, Pumps, or Compressors to account for startup surge.
+                    </div>
+
+                    <div id="appliance-container"></div>
+
+                    <button class="btn btn-add w-100 py-2 mt-3 fw-bold rounded" onclick="addAppliance()">+ Add Appliance</button>
+                </div>
+            </div>
+
+            <button class="btn btn-calc w-100 rounded shadow-sm mt-2" onclick="calculateSolar()">CALCULATE SYSTEM SIZE</button>
+            
+            <p class="small text-muted text-center mt-3">
+                Calculations include a 15% inverter loss factor and 30% solar panel loss factor.
+            </p>
+        </div>
+
+        <div class="col-lg-5">
+            <div id="results-area" style="opacity:0.4; pointer-events:none; transition:0.4s;">
+
+                <div class="card card-custom result-card" style="border-left-color: #f59e0b;">
+                    <div class="card-body">
+                        <span class="result-label">Recommended Inverter</span>
+                        <div class="result-value" id="res-inverter">0 W</div>
+                        <p class="small text-muted mb-0">Pure Sine Wave (Handling Surge)</p>
+                    </div>
+                </div>
+
+                <div class="card card-custom result-card" style="border-left-color: #10b981;">
+                    <div class="card-body">
+                        <span class="result-label">Battery Bank</span>
+                        <div class="result-value" id="res-battery">0 Ah</div>
+                        <div class="result-detail">
+                            <i class="fas fa-layer-group me-1"></i> Buy: <span id="res-batt-count" class="text-dark fw-bold">0</span> batteries
+                            <span class="small text-muted fw-normal">(200Ah 12V)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom result-card" style="border-left-color: #3b82f6;">
+                    <div class="card-body">
+                        <span class="result-label">Solar Panels</span>
+                        <div class="result-value" id="res-panels">0 W</div>
+                        <p class="small text-danger mb-0">*Total array wattage required</p>
+                    </div>
+                </div>
+
+                <div id="affiliate-links" class="affiliate-box text-center shadow-sm">
+                    <h5 class="fw-bold mb-3">Ready to build?</h5>
+                    <p class="small text-muted mb-3">Check current prices for recommended gear:</p>
+                    
+                    <a href="https://www.jumia.co.ke/solar-energy/" target="_blank" class="btn btn-warning w-100 fw-bold mb-2">
+                        <i class="fas fa-shopping-cart me-2"></i> Check Prices on Jumia
+                    </a>
+                    
+                    <a href="https://www.amazon.com/s?k=solar+inverter" target="_blank" class="btn btn-outline-dark w-100 fw-bold">
+                        <i class="fab fa-amazon me-2"></i> Check Prices on Amazon
+                    </a>
+                    
+                    <p class="small text-muted mt-2 mb-0" style="font-size: 0.75rem;">*We may earn a commission on purchases.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<section class="container mt-4 mb-5">
+    <div class="card bg-light border-0 p-4 rounded">
+        <h5>How This Calculation Works</h5>
+        <p class="small text-muted mb-0">
+            This tool follows standard IEC off-grid sizing principles. 
+            It assumes <strong>85% Inverter Efficiency</strong> and applies a <strong>1.3 Safety Factor</strong> to solar panel sizing to account for dust, heat, and wiring losses. 
+            Battery sizing respects Depth of Discharge (DoD) limits (50% for Lead Acid, 80% for Lithium) to maximize lifespan.
+        </p>
+    </div>
+</section>
+
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', addAppliance);
+
+function addAppliance() {
+    const c = document.getElementById('appliance-container');
+    // Using backticks for cleaner HTML template
+    const html = `
+    <div class="row g-2 mb-2 appliance-row align-items-center">
+        <div class="col-5">
+            <input type="text" class="form-control" placeholder="Item (e.g. TV)">
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <input type="number" class="form-control watt-input" placeholder="W">
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="input-group">
+                <input type="number" class="form-control hour-input" placeholder="H">
+            </div>
+        </div>
+        <div class="col-2 text-center">
+            <div class="form-check d-flex justify-content-center">
+                <input type="checkbox" class="form-check-input motor-check" title="Motor Surge?">
+            </div>
+            <small style="font-size:0.7rem">Motor</small>
+        </div>
+        <div class="col-12 text-end" style="margin-top:-5px">
+             <button onclick="this.parentElement.parentElement.remove()" class="btn btn-link text-danger p-0" style="font-size:0.8rem; text-decoration:none;">Remove</button>
+        </div>
+    </div>`;
+    
+    c.insertAdjacentHTML('beforeend', html);
+}
+
+function calculateSolar() {
+    // 1. Safe Selectors
+    const voltage = parseFloat(document.getElementById('voltage').value);
+    const dod = parseFloat(document.getElementById('battType').value);
+    const sun = parseFloat(document.getElementById('sunHours').value);
+    const autoDays = parseFloat(document.getElementById('autonomy').value);
+
+    let totalRunWatts = 0;
+    let totalDailyWh = 0;
+    let maxSurgeGap = 0;
+    let hasData = false;
+
+    // 2. Iterate Rows
+    document.querySelectorAll('.appliance-row').forEach(row => {
+        const w = parseFloat(row.querySelector('.watt-input').value) || 0;
+        const h = parseFloat(row.querySelector('.hour-input').value) || 0;
+        const isMotor = row.querySelector('.motor-check').checked;
+
+        if (w > 0) hasData = true;
+
+        totalRunWatts += w;
+        totalDailyWh += (w * h);
+
+        // Surge Logic: If motor, surge is ~3x. 
+        // We add the 'gap' (2x extra) to the total running watts later.
+        if (isMotor) {
+            const gap = w * 2; 
+            if (gap > maxSurgeGap) maxSurgeGap = gap;
+        }
+    });
+
+    if (!hasData) return alert("Please add at least one appliance with wattage.");
+
+    // 3. Engineering Math
+    
+    // Inverter: Running Load + The Single Biggest Surge Gap + 25% Safety Margin
+    const invSize = Math.ceil((totalRunWatts + maxSurgeGap) * 1.25);
+
+    // Battery: 
+    // Daily Energy needed from Battery = App Energy / Inverter Efficiency (0.85)
+    const dailyDrawFromBattery = totalDailyWh / 0.85;
+    
+    // Total Storage = Daily Draw * Autonomy Days
+    const totalStorageWh = dailyDrawFromBattery * autoDays;
+    
+    // Required Ah = (Total Storage / Voltage) / Depth of Discharge
+    const battAh = Math.ceil((totalStorageWh / voltage) / dod);
+
+    // Panels:
+    // Panels must replace the Daily Draw (not just app load) + 30% Loss Factor / Sun Hours
+    const panelWatts = Math.ceil((dailyDrawFromBattery * 1.3) / sun);
+
+    // Battery Counter (Visual Helper)
+    // Assume 200Ah 12V blocks
+    const seriesCount = voltage / 12;
+    const parallelCount = Math.ceil(battAh / 200);
+    const totalBatteries = seriesCount * parallelCount;
+
+
+    // 4. Update UI
+    const resultsArea = document.getElementById('results-area');
+    resultsArea.style.opacity = '1';
+    resultsArea.style.pointerEvents = 'all';
+
+    document.getElementById('res-inverter').textContent = invSize.toLocaleString() + " W";
+    document.getElementById('res-battery').textContent = battAh.toLocaleString() + " Ah";
+    document.getElementById('res-panels').textContent = panelWatts.toLocaleString() + " W";
+    
+    document.getElementById('res-batt-count').textContent = totalBatteries;
+
+    // Show Affiliate Section
+    document.getElementById('affiliate-links').style.display = 'block';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
